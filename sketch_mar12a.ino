@@ -1,5 +1,5 @@
 #include "HX711.h"
-#define LOADCELL1_DOUT_PIN 3
+
 #define LOADCELL1_DOUT_PIN 3
 #define LOADCELL1_SCK_PIN 2
 #define LOADCELL2_DOUT_PIN 5
