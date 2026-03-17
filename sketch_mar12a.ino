@@ -36,3 +36,13 @@
 
 #define GRAMS_TO_MMHG 0.00386
 
+HX711 loadcell1;
+HX711 loadcell2;
+
+float pressure1 = 0.0;
+float pressure2 = 0.0;
+float pressureAvg = 0.0;
+float pressureMax = 0.0;
+
+float integralError = 0.0;
+float riskScore = 0.0;
