@@ -1,37 +1,73 @@
-#include "HX711.h"
+// ===============================
+// MOTOR CONTROL (TB6612 DRIVER)
+// ===============================
 
-#define LOADCELL1_DOUT_PIN 3
-#define LOADCELL1_SCK_PIN 2
-#define LOADCELL2_DOUT_PIN 5
-#define LOADCELL2_SCK_PIN 4
+// Pin definitions
+const int AIN1 = 7;
+const int AIN2 = 8;
+const int PWMA = 9;
+const int STBY = 10;  // You can use any pin, or tie STBY to 5V
 
-#define MOTOR_PWM_PIN 9
-#define MOTOR_IN1_PIN 7
-#define MOTOR_IN2_PIN 8
+// Motor speed (0–255)
+int motorSpeed = 150;
 
-#define LED_GREEN_PIN 10
-#define LED_YELLOW_PIN 11
-#define LED_RED_PIN 12
+void setup() {
+  // Set pins as outputs
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(PWMA, OUTPUT);
+  pinMode(STBY, OUTPUT);
 
-#define EMERGENCY_BUTTON_PIN 6
-#define POWER_SWITCH_PIN 13
+  // Enable motor driver
+  digitalWrite(STBY, HIGH);
 
-#define PRESSURE_TARGET 18.0
-#define PRESSURE_SAFE_MAX 20.0
-#define PRESSURE_CAUTION_MAX 28.0
-#define PRESSURE_WARNING_MAX 32.0
-#define PRESSURE_CRITICAL 32.0
+  Serial.begin(9600);
+  Serial.println("Motor Test Starting...");
+}
 
-#define RISK_SCORE_LIMIT 600.0
-#define HOTSPOT_THRESHOLD 8.0
+void loop() {
+  // Spin forward
+  Serial.println("Forward");
+  moveForward(motorSpeed);
+  delay(3000);
 
-#define KP 0.8
-#define KI 0.1
-#define CYCLE_TIME_MS 50
-#define MAX_MOTOR_SPEED 255
-#define MAX_STEPS_PER_CYCLE 10
+  // Stop
+  Serial.println("Stop");
+  stopMotor();
+  delay(2000);
 
-#define LOADCELL1_CALIBRATION -7050.0
-#define LOADCELL2_CALIBRATION -7050.0
+  // Spin backward
+  Serial.println("Backward");
+  moveBackward(motorSpeed);
+  delay(3000);
 
-#define GRAMS_TO_MMHG 0.00386
+  // Stop again
+  Serial.println("Stop");
+  stopMotor();
+  delay(3000);
+}
+
+// ===============================
+// FUNCTIONS
+// ===============================
+
+// Move motor forward
+void moveForward(int speed) {
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  analogWrite(PWMA, speed);
+}
+
+// Move motor backward
+void moveBackward(int speed) {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  analogWrite(PWMA, speed);
+}
+
+// Stop motor
+void stopMotor() {
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+  analogWrite(PWMA, 0);
+}
