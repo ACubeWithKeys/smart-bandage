@@ -1,71 +1,60 @@
 // ===============================
-// MOTOR CONTROL (TB6612 DRIVER)
+// MOTOR + BUTTON CONTROL
 // ===============================
 
-// Pin definitions
+// Motor pins
 const int AIN1 = 7;
 const int AIN2 = 8;
 const int PWMA = 9;
-const int STBY = 10;  // You can use any pin, or tie STBY to 5V
+const int STBY = 10;
 
-// Motor speed (0–255)
+// Button pin
+const int BUTTON = 13;
+
+// Speed
 int motorSpeed = 150;
 
 void setup() {
-  // Set pins as outputs
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(PWMA, OUTPUT);
   pinMode(STBY, OUTPUT);
 
-  // Enable motor driver
-  digitalWrite(STBY, HIGH);
+  pinMode(BUTTON, INPUT_PULLUP);
+
+  digitalWrite(STBY, HIGH); // enable motor driver
 
   Serial.begin(9600);
-  Serial.println("Motor Test Starting...");
 }
 
 void loop() {
-  // Spin forward
-  Serial.println("Forward");
-  moveForward(motorSpeed);
-  delay(3000);
 
-  // Stop
-  Serial.println("Stop");
-  stopMotor();
-  delay(2000);
+  int buttonState = digitalRead(BUTTON);
 
-  // Spin backward
-  Serial.println("Backward");
-  moveBackward(motorSpeed);
-  delay(3000);
+  // If button is pressed → STOP
+  if (buttonState == LOW) {
+    stopMotor();
+    Serial.println("Button pressed → STOP");
+  } 
+  else {
+    // Otherwise motor runs forward
+    moveForward(motorSpeed);
+    Serial.println("Running...");
+  }
 
-  // Stop again
-  Serial.println("Stop");
-  stopMotor();
-  delay(3000);
+  delay(100);
 }
 
 // ===============================
 // FUNCTIONS
 // ===============================
 
-// Move motor forward
 void moveForward(int speed) {
   digitalWrite(AIN1, HIGH);
   digitalWrite(AIN2, LOW);
   analogWrite(PWMA, speed);
 }
 
-// Move motor backward
-void moveBackward(int speed) {
-  digitalWrite(AIN1, LOW);
-  digitalWrite(AIN2, HIGH);
-  analogWrite(PWMA, speed);
-}
-
-// Stop motor
 void stopMotor() {
   digitalWrite(AIN1, LOW);
   digitalWrite(AIN2, LOW);
